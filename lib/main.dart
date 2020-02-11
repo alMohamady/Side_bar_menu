@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_app_side_menu/theme.dart';
 import 'classes/navigtion_drawer.dart';
 
 void main() => runApp(MyApp());
@@ -24,9 +24,17 @@ class MyHomePage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: drawerBackgroundColor,
         title: Text('Navigation Drawer'),
       ),
-      drawer: NavigationDrawer(),
+      body: Stack(
+        children: <Widget>[
+          Container(color: Colors.red,),
+          NavigationDrawer(),
+        ],
+
+      ),
     );
   }
 }

@@ -15,16 +15,17 @@ class NavigationDrawer extends StatefulWidget{
 
 class NavigationDrawerState extends State<NavigationDrawer> with SingleTickerProviderStateMixin {
   double maxWidth = 250;
-  double minWidth = 65;
+  double minWidth = 75;
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
+  int currentSelectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: Duration(milliseconds: 500));
     widthAnimation = Tween<double>(begin: maxWidth, end: minWidth).animate(
         _animationController);
   }
@@ -41,29 +42,37 @@ class NavigationDrawerState extends State<NavigationDrawer> with SingleTickerPro
   }
 
   Widget getWidget(context, widget) {
-    return Container(
-      width: widthAnimation.value,
-      color: drawerBackgroundColor,
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 50,),
-          CollapsingListTile(
-            title: 'Ahmed Mohamady',
-            icon: Icons.person,
-            animationController: _animationController,
-          ),
-          Expanded(
-            child: ListView.builder(itemBuilder: (context, counter) {
-              return CollapsingListTile(
-                title: navigationItems[counter].title,
-                icon: navigationItems[counter].icon,
-                animationController: _animationController,
-              );
-            },
-              itemCount: navigationItems.length,
+    return Material(
+      elevation: 80,
+      child: Container(
+        width: widthAnimation.value,
+        color: drawerBackgroundColor,
+        child: Column(
+          children: <Widget>[
+            CollapsingListTile(title: 'Ahmed Mohamdy', icon: Icons.person, animationController: _animationController,),
+            Divider(color: Colors.grey, height: 40.0,),
+            Expanded(
+              child: ListView.separated(
+                separatorBuilder: (context, counter) {
+                  return Divider(height: 12.0);
+                },
+                itemBuilder: (context, counter) {
+                  return CollapsingListTile(
+                    onTap: () {
+                      setState(() {
+                        currentSelectedIndex = counter;
+                      });
+                    },
+                    isSelected: currentSelectedIndex == counter,
+                    title: navigationItems[counter].title,
+                    icon: navigationItems[counter].icon,
+                    animationController: _animationController,
+                  );
+                },
+                itemCount: navigationItems.length,
+              ),
             ),
-          ),
-          InkWell(
+            InkWell(
               onTap: () {
                 setState(() {
                   isCollapsed = !isCollapsed;
@@ -72,10 +81,18 @@ class NavigationDrawerState extends State<NavigationDrawer> with SingleTickerPro
                       : _animationController.reverse();
                 });
               },
-              child: Icon(Icons.chevron_left, color: Colors.white, size: 50,)
-          ),
-          SizedBox(height: 50,),
-        ],
+              child: AnimatedIcon(
+                icon: AnimatedIcons.close_menu,
+                progress: _animationController,
+                color: selectedColor,
+                size: 50.0,
+              ),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+          ],
+        ),
       ),
     );
   }
